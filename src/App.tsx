@@ -1,16 +1,10 @@
 import "./App.css"
-import { Button } from "primereact/button";
+import Homepage from "./components/Homepage.tsx";
 
 function App() {
   return (
     <>
-      <div className="flex justify-content-center mt-5">
-        <Button
-          label="test button"
-          icon="pi pi-sign-out"
-          iconPos="right"
-        />
-      </div>
+      <Homepage/>
     </>
   )
 }
