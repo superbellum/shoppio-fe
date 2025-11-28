@@ -9,11 +9,6 @@ export interface ShoppingListTabDetailsProps {
 export default function ShoppingListTabDetails({shoppingList}: ShoppingListTabDetailsProps) {
   return (
     <>
-      <h2 className="mb-5">
-        <i className="pi pi-info-circle text-2xl mr-2"></i>
-        Details
-      </h2>
-
       <h3 className="mb-2">
         <i className="pi pi-book mr-2"></i>
         Description
@@ -23,8 +18,8 @@ export default function ShoppingListTabDetails({shoppingList}: ShoppingListTabDe
         value={shoppingList.description}
         readOnly
         // onChange={(e) => setValue(e.target.value)}
-        rows={5}
-        cols={30}
+        rows={10}
+        className="w-11"
       />
 
       <h3 className="mb-2 mt-4">

@@ -1,4 +1,4 @@
-import type {Status} from "./Status.ts";
+import type {Status} from "./Status";
 
 export interface IShoppingListItem {
   id: string,
