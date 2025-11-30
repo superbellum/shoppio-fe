@@ -19,7 +19,7 @@ export default function Homepage() {
     <>
       <CreateShoppingListModality
         visible={isCreateShoppingListModalityVisible}
-        onClose={() => setIsCreateShoppingListModalityVisible(false)}
+        onHide={() => setIsCreateShoppingListModalityVisible(false)}
       />
       
       <div className="p-4">

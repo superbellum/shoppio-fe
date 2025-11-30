@@ -1,71 +1,60 @@
-import { ReactNode, useCallback, useRef, useState } from "react";
-import { Toast } from "primereact/toast";
-import type { CreateShoppingListItemRequest } from "../model/request/CreateShoppingListItemRequest";
-import { useAppDispatch } from "../store";
-import { Button } from "primereact/button";
-import { Dialog } from "primereact/dialog";
-import { FloatLabel } from "primereact/floatlabel";
-import { InputText } from "primereact/inputtext";
-import delay from "../utils/sleep";
-import { addItemToShoppingList } from "../store/slices/shoppingListSlice";
-import { Status } from "../model/entity/Status";
-import moment from "moment";
+import {ReactNode, useCallback, useRef, useState} from "react";
+import {Toast} from "primereact/toast";
+import type {CreateShoppingListItemRequest} from "../model/request/CreateShoppingListItemRequest";
+import {useAppDispatch} from "../store";
+import {Button} from "primereact/button";
+import {Dialog} from "primereact/dialog";
+import {FloatLabel} from "primereact/floatlabel";
+import {InputText} from "primereact/inputtext";
+import axios from "axios";
+import type {IShoppingListItem} from "../model/entity/IShoppingListItem";
+import {addItemToShoppingList} from "../store/slices/shoppingListSlice.ts";
 
 export interface CreateShoppingListItemModalityProps {
   visible: boolean;
-  onClose: () => void;
+  onHide: () => void;
   shoppingListId: string;
 }
 
 export default function CreateShoppingListItemModality(props: CreateShoppingListItemModalityProps) {
-  const { visible, onClose, shoppingListId } = props;
+  const {visible, onHide, shoppingListId} = props;
   const [isLoading, setIsLoading] = useState(false);
   const toast = useRef<Toast | null>(null);
   const dispatch = useAppDispatch();
   const [createShoppingListItemRequest, setCreateShoppingListItemRequest] = useState<CreateShoppingListItemRequest | null>(null);
-  
-  const onCancel = useCallback(() => {
+
+  const onClose = useCallback(() => {
     setCreateShoppingListItemRequest(null);
-    onClose();
-  }, [onClose, setCreateShoppingListItemRequest]);
-  
+    onHide();
+  }, [onHide, setCreateShoppingListItemRequest]);
+
   const onCreateShoppingListItem = useCallback(async () => {
     setIsLoading(true);
-    await delay(1000);
-    if (!createShoppingListItemRequest?.name.trim()) {
-      console.log("Name must not be empty!");
+
+    const response = await axios.post<IShoppingListItem>(
+      `http://localhost:8080/api/shopping-list/${shoppingListId}/items`,
+      createShoppingListItemRequest!
+    );
+
+    if (response.status !== 200) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail: `Error when creating shopping list item: ${response.status}: ${response.statusText}`
+      });
+      onClose();
       return;
     }
-    setIsLoading(false);
-    dispatch(addItemToShoppingList({
-      shoppingListId: shoppingListId,
-      id: moment().toDate().toString(),
-      link: createShoppingListItemRequest?.link,
-      imageData: createShoppingListItemRequest?.imageData,
-      name: createShoppingListItemRequest!.name,
-      status: Status.OPEN,
-      lastModifiedDate: moment().toDate().toString(),
-      createdDate: moment().toDate().toString(),
-    }));
-    toast.current?.show({ severity: "success", summary: "Success", detail: "Created shopping list item" });
-    setCreateShoppingListItemRequest(null);
+
+    dispatch(addItemToShoppingList(response.data));
+    toast.current?.show({
+      severity: "success",
+      summary: "Success",
+      detail: "Shopping list item successfully created"
+    });
     onClose();
-    
-    // todo: remove dispatch from above & uncomment below & test later
-    // const response = await axios.post<IShoppingListItem>(
-    //   `http://localhost:8080/api/shopping-list/${shoppingListId}/items`,
-    //   createShoppingListItemRequest!
-    // );
-    // if (response.status !== 200) {
-    //   console.log("error from BE server:", response.status);
-    //   setIsLoading(false);
-    //   return;
-    // }
-    //
-    // dispatch(appendShoppingList(response.data));
-    // setIsLoading(false);
-  }, [createShoppingListItemRequest, shoppingListId, dispatch, toast, onClose, setIsLoading, setCreateShoppingListItemRequest]);
-  
+  }, [shoppingListId, createShoppingListItemRequest, dispatch, onClose]);
+
   const footer = (
     <div>
       <Button
@@ -77,11 +66,11 @@ export default function CreateShoppingListItemModality(props: CreateShoppingList
       />
     </div>
   );
-  
+
   return (
     <>
       <Toast ref={toast}/>
-      
+
       <Dialog
         maximizable
         draggable={false}
@@ -89,7 +78,7 @@ export default function CreateShoppingListItemModality(props: CreateShoppingList
         header="Create Shopping List Item"
         visible={visible}
         className="w-11 sm:w-9 md:w-7 lg:w-5 xl:w-4"
-        onHide={onCancel}
+        onHide={onClose}
         footer={footer as ReactNode}
       >
         <div className="flex flex-column justify-content-center pt-4 gap-6">
@@ -105,7 +94,7 @@ export default function CreateShoppingListItemModality(props: CreateShoppingList
             />
             <label htmlFor="name">Name</label>
           </FloatLabel>
-          
+
           <FloatLabel>
             <InputText
               className="w-full"
@@ -118,18 +107,18 @@ export default function CreateShoppingListItemModality(props: CreateShoppingList
             />
             <label htmlFor="link">Link</label>
           </FloatLabel>
-          
+
           <FloatLabel>
             <InputText
               className="w-full"
-              id="imageData"
-              value={createShoppingListItemRequest?.imageData}
+              id="imageUrl"
+              value={createShoppingListItemRequest?.imageUrl}
               onChange={(e) => setCreateShoppingListItemRequest({
                 ...createShoppingListItemRequest,
-                imageData: e.target.value.trim(),
+                imageUrl: e.target.value.trim(),
               } as CreateShoppingListItemRequest)}
             />
-            <label htmlFor="imageData">Image Data</label>
+            <label htmlFor="imageUrl">Image URL</label>
           </FloatLabel>
         </div>
       </Dialog>
