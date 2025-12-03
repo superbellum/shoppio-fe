@@ -8,7 +8,9 @@ import {FloatLabel} from "primereact/floatlabel";
 import {InputText} from "primereact/inputtext";
 import axios from "axios";
 import type {IShoppingListItem} from "../model/entity/IShoppingListItem";
-import {addItemToShoppingList} from "../store/slices/shoppingListSlice.ts";
+import {addItemToShoppingList} from "../store/slices/shoppingListSlice";
+import {Dropdown} from "primereact/dropdown";
+import {Priority} from "../model/entity/Priority.ts";
 
 export interface CreateShoppingListItemModalityProps {
   visible: boolean;
@@ -62,10 +64,56 @@ export default function CreateShoppingListItemModality(props: CreateShoppingList
         icon={isLoading ? "pi pi-spin pi-spinner" : "pi pi-plus"}
         iconPos="right"
         onClick={onCreateShoppingListItem}
-        disabled={!createShoppingListItemRequest?.name?.trim()}
+        disabled={!createShoppingListItemRequest?.name?.trim() || !createShoppingListItemRequest?.priority}
       />
     </div>
   );
+
+  const selectedPriorityTemplate = (option: Priority, props) => {
+    if (option) {
+      let iconClass = "";
+      switch (option) {
+        case Priority.HIGH:
+          iconClass = "pi-angle-double-up text-red-500";
+          break;
+        case Priority.MEDIUM:
+          iconClass = "pi-equals text-yellow-500";
+          break;
+        case Priority.LOW:
+          iconClass = "pi-angle-double-down text-green-500";
+          break;
+      }
+      return (
+        <div className="flex align-items-center">
+          <i className={`pi mr-2 ${iconClass}`}></i>
+          <span>{option}</span>
+        </div>
+      );
+    }
+
+    return <span>{"Q"}</span>;
+  };
+
+  const priorityOptionTemplate = (option: string) => {
+    let iconClass = "";
+    switch (option) {
+      case Priority.HIGH:
+        iconClass = "pi-angle-double-up text-red-500";
+        break;
+      case Priority.MEDIUM:
+        iconClass = "pi-equals text-yellow-500";
+        break;
+      case Priority.LOW:
+        iconClass = "pi-angle-double-down text-green-500";
+        break;
+    }
+    return (
+      <div className="flex align-items-center">
+        <i className={`pi mr-2 ${iconClass}`}></i>
+        <span>{option}</span>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -90,7 +138,7 @@ export default function CreateShoppingListItemModality(props: CreateShoppingList
               onChange={(e) => setCreateShoppingListItemRequest({
                 ...createShoppingListItemRequest,
                 name: e.target.value.trimStart(),
-              })}
+              } as CreateShoppingListItemRequest)}
             />
             <label htmlFor="name">Name</label>
           </FloatLabel>
@@ -119,6 +167,23 @@ export default function CreateShoppingListItemModality(props: CreateShoppingList
               } as CreateShoppingListItemRequest)}
             />
             <label htmlFor="imageUrl">Image URL</label>
+          </FloatLabel>
+
+          <FloatLabel>
+            <Dropdown
+              className="w-full"
+              inputId="priority"
+              value={createShoppingListItemRequest?.priority}
+              onChange={(e) => setCreateShoppingListItemRequest({
+                ...createShoppingListItemRequest,
+                priority: e.value,
+              } as CreateShoppingListItemRequest)}
+              options={Object.values(Priority)}
+              valueTemplate={selectedPriorityTemplate as ReactNode}
+              itemTemplate={priorityOptionTemplate as ReactNode}
+              showClear
+            />
+            <label htmlFor="priority">Priority</label>
           </FloatLabel>
         </div>
       </Dialog>

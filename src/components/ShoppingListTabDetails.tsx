@@ -23,20 +23,20 @@ export default function ShoppingListTabDetails({shoppingList}: ShoppingListTabDe
       />
 
       <h3 className="mb-2 mt-4">
-        <i className="pi pi-calendar-clock mr-2"></i>
+        <i className="pi pi-calendar-plus mr-2"></i>
         Created
       </h3>
       <p>{formatDate(shoppingList.createdDate)}</p>
 
       <h3 className="mb-2 mt-4">
-        <i className="pi pi-calendar-clock mr-2"></i>
+        <i className="pi pi-file-edit mr-2"></i>
         Last Modified
       </h3>
       <p>{formatDate(shoppingList.lastModifiedDate)}</p>
 
 
       <h3 className="mb-2 mt-4">
-        <i className="pi pi-calendar-clock mr-2"></i>
+        <i className="pi pi-bullseye mr-2"></i>
         Due
       </h3>
       <p>

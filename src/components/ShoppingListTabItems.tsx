@@ -6,10 +6,10 @@ import {useState} from "react";
 import formatDate from "../utils/formatDate";
 import {Status} from "../model/entity/Status";
 import {Image} from "primereact/image";
-import {Tooltip} from "primereact/tooltip";
 import {Button} from "primereact/button";
 import CreateShoppingListItemModality from "./CreateShoppingListItemModality";
 import {InputText} from "primereact/inputtext";
+import {Priority} from "../model/entity/Priority.ts";
 
 export interface ShoppingListTabItemsProps {
   items: IShoppingListItem[];
@@ -67,29 +67,29 @@ export default function ShoppingListTabItems({items, shoppingListId}: ShoppingLi
     switch (item.status) {
       case Status.OPEN:
         return <>
-          <Tooltip target=".iconOpen"/>
-          <i
-            className="iconOpen pi pi-circle text-blue-400 text-2xl ml-3"
-            data-pr-tooltip="Open"
-            data-pr-position="right"
-            data-pr-showdelay="500"
-            data-pr-at="right+5 top"
-            data-pr-my="left center+10"
-          ></i>
+          <i className="pi pi-circle text-blue-400 text-2xl ml-3"></i>
         </>;
       case Status.COMPLETED:
         return <>
-          <Tooltip target=".iconCompleted"/>
-          <i
-            className="iconCompleted pi pi-check-circle text-green-500 text-2xl ml-3"
-            data-pr-tooltip="Completed"
-            data-pr-position="right"
-            data-pr-showdelay="500"
-            data-pr-at="right+5 top"
-            data-pr-my="left center+10"
-          ></i>
+          <i className="pi pi-check-circle text-green-500 text-2xl ml-3"></i>
         </>;
     }
+  };
+
+  const priorityTemplate = (item: IShoppingListItem) => {
+    let iconClass = "";
+    switch (item.priority) {
+      case Priority.HIGH:
+        iconClass = "pi-angle-double-up text-red-500";
+        break;
+      case Priority.MEDIUM:
+        iconClass = "pi-equals text-yellow-500";
+        break;
+      case Priority.LOW:
+        iconClass = "pi-angle-double-down text-green-500";
+        break;
+    }
+    return <i className={`pi ${iconClass} text-3xl ml-3`}></i>;
   };
 
   const onCellEditComplete = (e: ColumnEvent) => {
@@ -165,6 +165,7 @@ export default function ShoppingListTabItems({items, shoppingListId}: ShoppingLi
               onCellEditComplete={onCellEditComplete}
             ></Column>
             <Column field="status" header="Status" body={statusTemplate as ReactNode}></Column>
+            <Column field="priority" header="Priority" body={priorityTemplate as ReactNode}></Column>
             <Column
               field="link"
               header="Link"
