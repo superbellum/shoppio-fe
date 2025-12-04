@@ -11,12 +11,3 @@ h5, p {
     margin: 0;
     padding: 0;
 }
-
-.item-edit-row .showOnHover {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.item-edit-row:hover .showOnHover {
-    opacity: 1;
-}

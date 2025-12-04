@@ -1,33 +1,30 @@
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
 import {type ReactNode, useCallback, useRef, useState} from "react";
-import type {CreateShoppingListRequest} from "../model/request/CreateShoppingListRequest";
+import type {CreateShoppingListRequest} from "../../model/request/CreateShoppingListRequest.ts";
 import {InputText} from "primereact/inputtext";
 import {InputTextarea} from "primereact/inputtextarea";
 import {FloatLabel} from "primereact/floatlabel";
 import {Calendar} from "primereact/calendar";
-import {useAppDispatch} from "../store";
+import {useAppDispatch, useAppSelector} from "../../store";
 import {Toast} from "primereact/toast";
-import {appendShoppingList} from "../store/slices/shoppingListSlice";
+import {appendShoppingList} from "../../store/slices/shoppingListSlice.ts";
 import axios from "axios";
-import type {IShoppingList} from "../model/entity/IShoppingList";
+import type {IShoppingList} from "../../model/entity/IShoppingList.ts";
+import {setCreateShoppingListModality} from "../../store/slices/appSlice.ts";
 
-export interface CreateShoppingListModalityProps {
-  visible: boolean;
-  onHide: () => void;
-}
-
-export default function CreateShoppingListModality({visible, onHide}: CreateShoppingListModalityProps) {
+export default function CreateShoppingListModality() {
   const [createShoppingListRequest, setCreateShoppingListRequest] = useState<CreateShoppingListRequest | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
+  const {isVisible} = useAppSelector(state => state.appState.createShoppingListModality);
   const toast = useRef<Toast | null>(null);
 
   const onClose = useCallback(() => {
     setIsLoading(false);
     setCreateShoppingListRequest(null);
-    onHide();
-  }, [onHide, setCreateShoppingListRequest, setIsLoading]);
+    dispatch(setCreateShoppingListModality({isVisible: false}));
+  }, [dispatch, setCreateShoppingListRequest, setIsLoading]);
 
   const onCreateShoppingList = useCallback(async () => {
     setIsLoading(true);
@@ -74,7 +71,7 @@ export default function CreateShoppingListModality({visible, onHide}: CreateShop
         draggable={false}
         resizable={false}
         header="Create Shopping List"
-        visible={visible}
+        visible={isVisible}
         className="w-11 sm:w-9 md:w-7 lg:w-5 xl:w-4"
         onHide={onClose}
         footer={footer as ReactNode}

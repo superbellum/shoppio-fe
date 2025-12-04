@@ -1,23 +1,28 @@
-import type {IShoppingListItem} from "../model/entity/IShoppingListItem";
+import type {IShoppingListItem} from "../../../model/entity/IShoppingListItem.ts";
 import {DataTable} from "primereact/datatable";
 import {Column, type ColumnEditorOptions, type ColumnEvent} from "primereact/column";
 import type {ReactNode} from "react";
-import {useState} from "react";
-import formatDate from "../utils/formatDate";
-import {Status} from "../model/entity/Status";
+import {useCallback} from "react";
+import formatDate from "../../../utils/formatDate.ts";
+import {Status} from "../../../model/entity/Status.ts";
 import {Image} from "primereact/image";
 import {Button} from "primereact/button";
-import CreateShoppingListItemModality from "./CreateShoppingListItemModality";
 import {InputText} from "primereact/inputtext";
-import {Priority} from "../model/entity/Priority.ts";
+import {Priority} from "../../../model/entity/Priority.ts";
+import {useAppDispatch} from "../../../store";
+import {setCreateShoppingListItemModality} from "../../../store/slices/appSlice.ts";
 
 export interface ShoppingListTabItemsProps {
   items: IShoppingListItem[];
   shoppingListId: string;
 }
 
-export default function ShoppingListTabItems({items, shoppingListId}: ShoppingListTabItemsProps) {
-  const [isCreateShoppingListItemModalityVisible, setIsCreateShoppingListItemModalityVisible] = useState(false);
+export default function ShoppingListItems({items, shoppingListId}: ShoppingListTabItemsProps) {
+  const dispatch = useAppDispatch();
+
+  const onCreateShoppingListItem = useCallback(() => {
+    dispatch(setCreateShoppingListItemModality({isVisible: true, itemId: shoppingListId}));
+  }, [dispatch, shoppingListId]);
 
   const nameTemplate = (item: IShoppingListItem) => {
     return (
@@ -124,18 +129,12 @@ export default function ShoppingListTabItems({items, shoppingListId}: ShoppingLi
 
   return (
     <>
-      <CreateShoppingListItemModality
-        visible={isCreateShoppingListItemModalityVisible}
-        onHide={() => setIsCreateShoppingListItemModalityVisible(false)}
-        shoppingListId={shoppingListId}
-      />
-
       <div className="flex justify-content-end mb-2">
         <Button
           size="small"
           icon="pi pi-plus"
           rounded
-          onClick={() => setIsCreateShoppingListItemModalityVisible(true)}/>
+          onClick={onCreateShoppingListItem}/>
       </div>
 
       {items.length > 0

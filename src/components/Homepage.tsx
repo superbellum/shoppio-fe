@@ -1,37 +1,24 @@
-import useDataLoader from "../hooks/useDataLoader";
-import { ReactNode, useEffect, useState } from "react";
-import { useAppSelector } from "../store";
-import { TabPanel, TabView } from "primereact/tabview";
-import ShoppingListTab from "./ShoppingListTab";
-import { Button } from "primereact/button";
-import CreateShoppingListModality from "./CreateShoppingListModality";
+import useDataLoader from "../hooks/useDataLoader.ts";
+import {ReactNode, useEffect} from "react";
+import {useAppSelector} from "../store";
+import {TabPanel, TabView} from "primereact/tabview";
+import ShoppingListTab from "./shoppingListTab/ShoppingListTab.tsx";
+import Header from "./Header.tsx";
 
 export default function Homepage() {
   const shoppingLists = useAppSelector(state => state.shoppingLists);
-  const { loadShoppingLists } = useDataLoader();
-  const [isCreateShoppingListModalityVisible, setIsCreateShoppingListModalityVisible] = useState(false);
-  
+  const {loadShoppingLists} = useDataLoader();
+
   useEffect(() => {
     loadShoppingLists();
   }, [loadShoppingLists]);
-  
+
   return (
     <>
-      <CreateShoppingListModality
-        visible={isCreateShoppingListModalityVisible}
-        onHide={() => setIsCreateShoppingListModalityVisible(false)}
-      />
-      
-      <div className="p-4">
-        <div className="flex align-items-center gap-3 p-1">
-        <span className="text-2xl">
-        <i className="pi pi-shopping-cart text-2xl mr-2"></i>
-        Shopping lists: {shoppingLists.length}
-        </span>
-          <Button size="small" icon="pi pi-plus" rounded onClick={() => setIsCreateShoppingListModalityVisible(true)}/>
-        </div>
-        
-        <TabView>
+      <Header/>
+
+      <div className="p-2 md:p-4">
+        <TabView scrollable>
           {shoppingLists.map(shoppingList => (
             <TabPanel header={shoppingList.title} key={shoppingList.id}>
               <ShoppingListTab shoppingList={shoppingList}/>

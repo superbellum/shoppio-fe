@@ -1,40 +1,40 @@
 import {ReactNode, useCallback, useRef, useState} from "react";
 import {Toast} from "primereact/toast";
-import type {CreateShoppingListItemRequest} from "../model/request/CreateShoppingListItemRequest";
-import {useAppDispatch} from "../store";
+import type {CreateShoppingListItemRequest} from "../../model/request/CreateShoppingListItemRequest.ts";
+import {useAppDispatch, useAppSelector} from "../../store";
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
 import {FloatLabel} from "primereact/floatlabel";
 import {InputText} from "primereact/inputtext";
 import axios from "axios";
-import type {IShoppingListItem} from "../model/entity/IShoppingListItem";
-import {addItemToShoppingList} from "../store/slices/shoppingListSlice";
+import type {IShoppingListItem} from "../../model/entity/IShoppingListItem.ts";
+import {addItemToShoppingList} from "../../store/slices/shoppingListSlice.ts";
 import {Dropdown} from "primereact/dropdown";
-import {Priority} from "../model/entity/Priority.ts";
+import {Priority} from "../../model/entity/Priority.ts";
+import {setCreateShoppingListItemModality} from "../../store/slices/appSlice.ts";
 
-export interface CreateShoppingListItemModalityProps {
-  visible: boolean;
-  onHide: () => void;
-  shoppingListId: string;
-}
-
-export default function CreateShoppingListItemModality(props: CreateShoppingListItemModalityProps) {
-  const {visible, onHide, shoppingListId} = props;
+export default function CreateShoppingListItemModality() {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useRef<Toast | null>(null);
+  const {isVisible, itemId} = useAppSelector(state => state.appState.createShoppingListItemModality);
   const dispatch = useAppDispatch();
   const [createShoppingListItemRequest, setCreateShoppingListItemRequest] = useState<CreateShoppingListItemRequest | null>(null);
 
   const onClose = useCallback(() => {
+    setIsLoading(false);
     setCreateShoppingListItemRequest(null);
-    onHide();
-  }, [onHide, setCreateShoppingListItemRequest]);
+    dispatch(setCreateShoppingListItemModality({isVisible: false, itemId: undefined}));
+  }, [dispatch, setCreateShoppingListItemRequest, setIsLoading]);
 
   const onCreateShoppingListItem = useCallback(async () => {
+    if (!itemId) {
+      return;
+    }
+
     setIsLoading(true);
 
     const response = await axios.post<IShoppingListItem>(
-      `http://localhost:8080/api/shopping-list/${shoppingListId}/items`,
+      `http://localhost:8080/api/shopping-list/${itemId}/items`,
       createShoppingListItemRequest!
     );
 
@@ -55,7 +55,7 @@ export default function CreateShoppingListItemModality(props: CreateShoppingList
       detail: "Shopping list item successfully created"
     });
     onClose();
-  }, [shoppingListId, createShoppingListItemRequest, dispatch, onClose]);
+  }, [itemId, createShoppingListItemRequest, dispatch, onClose]);
 
   const footer = (
     <div>
@@ -124,7 +124,7 @@ export default function CreateShoppingListItemModality(props: CreateShoppingList
         draggable={false}
         resizable={false}
         header="Create Shopping List Item"
-        visible={visible}
+        visible={isVisible && !!itemId}
         className="w-11 sm:w-9 md:w-7 lg:w-5 xl:w-4"
         onHide={onClose}
         footer={footer as ReactNode}
