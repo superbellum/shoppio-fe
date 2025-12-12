@@ -8,6 +8,7 @@ export interface AppState {
     isVisible: boolean;
     itemId?: string;
   };
+  activeShoppingListTabIndex: number;
 }
 
 const initialState: AppState = {
@@ -18,6 +19,7 @@ const initialState: AppState = {
     isVisible: false,
     itemId: undefined,
   },
+  activeShoppingListTabIndex: 0,
 };
 
 const appSlice = createSlice({
@@ -30,21 +32,22 @@ const appSlice = createSlice({
         createShoppingListModality: action.payload,
       };
     },
-    setCreateShoppingListItemModality(state: AppState, action: PayloadAction<{
-      isVisible: boolean,
-      itemId?: string
-    }>) {
+    setCreateShoppingListItemModality(state: AppState, action: PayloadAction<{ isVisible: boolean, itemId?: string }>) {
       return {
         ...state,
         createShoppingListItemModality: action.payload,
       };
     },
+    setActiveShoppingListTabIndex(state: AppState, action: PayloadAction<number>) {
+      state.activeShoppingListTabIndex = action.payload;
+    }
   }
 });
 
 export const {
   setCreateShoppingListModality,
   setCreateShoppingListItemModality,
+  setActiveShoppingListTabIndex,
 } = appSlice.actions;
 
 export default appSlice;

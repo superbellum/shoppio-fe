@@ -1,5 +1,4 @@
-import {ReactNode, useCallback, useRef, useState} from "react";
-import {Toast} from "primereact/toast";
+import {ReactNode, useCallback, useState} from "react";
 import type {CreateShoppingListItemRequest} from "../../model/request/CreateShoppingListItemRequest.ts";
 import {useAppDispatch, useAppSelector} from "../../store";
 import {Button} from "primereact/button";
@@ -12,59 +11,58 @@ import {addItemToShoppingList} from "../../store/slices/shoppingListSlice.ts";
 import {Dropdown} from "primereact/dropdown";
 import {Priority} from "../../model/entity/Priority.ts";
 import {setCreateShoppingListItemModality} from "../../store/slices/appSlice.ts";
+import {useNotification} from "../../hooks/useNotification.ts";
 
 export default function CreateShoppingListItemModality() {
-  const [isLoading, setIsLoading] = useState(false);
-  const toast = useRef<Toast | null>(null);
+  const [loading, setLoading] = useState(false);
+  const {notify} = useNotification();
   const {isVisible, itemId} = useAppSelector(state => state.appState.createShoppingListItemModality);
   const dispatch = useAppDispatch();
   const [createShoppingListItemRequest, setCreateShoppingListItemRequest] = useState<CreateShoppingListItemRequest | null>(null);
 
   const onClose = useCallback(() => {
-    setIsLoading(false);
+    setLoading(false);
     setCreateShoppingListItemRequest(null);
     dispatch(setCreateShoppingListItemModality({isVisible: false, itemId: undefined}));
-  }, [dispatch, setCreateShoppingListItemRequest, setIsLoading]);
+  }, [dispatch, setCreateShoppingListItemRequest, setLoading]);
 
   const onCreateShoppingListItem = useCallback(async () => {
     if (!itemId) {
       return;
     }
 
-    setIsLoading(true);
+    setLoading(true);
 
     const response = await axios.post<IShoppingListItem>(
       `http://localhost:8080/api/shopping-list/${itemId}/items`,
       createShoppingListItemRequest!
     );
 
-    if (response.status !== 200) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: `Error when creating shopping list item: ${response.status}: ${response.statusText}`
-      });
-      onClose();
-      return;
+    if (response.status === 200) {
+      dispatch(addItemToShoppingList(response.data));
+      notify("Success", "Shopping list item created", "success");
+    } else {
+      notify("Error", `Error when creating item: ${response.status}: ${response.statusText}`, "error");
     }
 
-    dispatch(addItemToShoppingList(response.data));
-    toast.current?.show({
-      severity: "success",
-      summary: "Success",
-      detail: "Shopping list item successfully created"
-    });
     onClose();
-  }, [itemId, createShoppingListItemRequest, dispatch, onClose]);
+  }, [itemId, createShoppingListItemRequest, dispatch, notify, onClose]);
+
+  const isCreateButtonDisabled = () => {
+    return !createShoppingListItemRequest?.name?.trim()
+      || !createShoppingListItemRequest?.priority
+      || !createShoppingListItemRequest?.imageUrl;
+  }
+
 
   const footer = (
     <div>
       <Button
         label="Create"
-        icon={isLoading ? "pi pi-spin pi-spinner" : "pi pi-plus"}
+        icon={loading ? "pi pi-spin pi-spinner" : "pi pi-plus"}
         iconPos="right"
         onClick={onCreateShoppingListItem}
-        disabled={!createShoppingListItemRequest?.name?.trim() || !createShoppingListItemRequest?.priority}
+        disabled={isCreateButtonDisabled()}
       />
     </div>
   );
@@ -117,13 +115,11 @@ export default function CreateShoppingListItemModality() {
 
   return (
     <>
-      <Toast ref={toast}/>
-
       <Dialog
         maximizable
         draggable={false}
         resizable={false}
-        header="Create Shopping List Item"
+        header={<p className="select-none">Create Shopping List Item</p> as ReactNode}
         visible={isVisible && !!itemId}
         className="w-11 sm:w-9 md:w-7 lg:w-5 xl:w-4"
         onHide={onClose}
@@ -140,7 +136,10 @@ export default function CreateShoppingListItemModality() {
                 name: e.target.value.trimStart(),
               } as CreateShoppingListItemRequest)}
             />
-            <label htmlFor="name">Name</label>
+            <label htmlFor="name">
+              Name
+              <span className="text-red-600 ml-1">*</span>
+            </label>
           </FloatLabel>
 
           <FloatLabel>
@@ -166,7 +165,10 @@ export default function CreateShoppingListItemModality() {
                 imageUrl: e.target.value.trim(),
               } as CreateShoppingListItemRequest)}
             />
-            <label htmlFor="imageUrl">Image URL</label>
+            <label htmlFor="imageUrl">
+              Image URL
+              <span className="text-red-600 ml-1">*</span>
+            </label>
           </FloatLabel>
 
           <FloatLabel>
@@ -183,9 +185,13 @@ export default function CreateShoppingListItemModality() {
               itemTemplate={priorityOptionTemplate as ReactNode}
               showClear
             />
-            <label htmlFor="priority">Priority</label>
+            <label htmlFor="priority">
+              Priority
+              <span className="text-red-600 ml-1">*</span>
+            </label>
           </FloatLabel>
         </div>
+        <p className="mt-3 text-xs select-none"><span className="text-red-600">*</span> required</p>
       </Dialog>
     </>
   );

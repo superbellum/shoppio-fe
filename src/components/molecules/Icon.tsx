@@ -19,7 +19,7 @@ export default function Icon(props: IconProps) {
       <i className={`tooltip-icon-${target} ${iconClassName}`}
          data-pr-tooltip={tooltip?.text}
          data-pr-position={tooltip?.position ?? "top"}
-         data-pr-showdelay={tooltip?.showDelay ?? 0}
+         data-pr-showdelay={tooltip?.showDelay ?? 300}
       >
       </i>
     </>

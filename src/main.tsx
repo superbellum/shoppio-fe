@@ -6,13 +6,16 @@ import App from "./App"
 import {PrimeReactProvider} from "primereact/api";
 import {Provider} from "react-redux";
 import {store} from "./store";
+import NotificationProvider from "./context/notification/NotificationProvider.tsx";
 
 const rootNode = (
   <StrictMode>
     <PrimeReactProvider>
-      <Provider store={store}>
-        <App/>
-      </Provider>
+      <NotificationProvider>
+        <Provider store={store}>
+          <App/>
+        </Provider>
+      </NotificationProvider>
     </PrimeReactProvider>
   </StrictMode>
 ) as ReactNode;

@@ -1,6 +1,7 @@
 @import "primeflex/primeflex.min.css";
 @import "primeicons/primeicons.css";
 @import "primereact/resources/themes/lara-light-cyan/theme.css";
+@import "animate.css/animate.min.css";
 
 html, body {
     margin: 0;

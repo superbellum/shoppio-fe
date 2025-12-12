@@ -1,24 +1,24 @@
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
-import {type ReactNode, useCallback, useRef, useState} from "react";
+import {type ReactNode, useCallback, useState} from "react";
 import type {CreateShoppingListRequest} from "../../model/request/CreateShoppingListRequest.ts";
 import {InputText} from "primereact/inputtext";
 import {InputTextarea} from "primereact/inputtextarea";
 import {FloatLabel} from "primereact/floatlabel";
 import {Calendar} from "primereact/calendar";
 import {useAppDispatch, useAppSelector} from "../../store";
-import {Toast} from "primereact/toast";
 import {appendShoppingList} from "../../store/slices/shoppingListSlice.ts";
 import axios from "axios";
 import type {IShoppingList} from "../../model/entity/IShoppingList.ts";
 import {setCreateShoppingListModality} from "../../store/slices/appSlice.ts";
+import {useNotification} from "../../hooks/useNotification.ts";
 
 export default function CreateShoppingListModality() {
   const [createShoppingListRequest, setCreateShoppingListRequest] = useState<CreateShoppingListRequest | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
+  const {notify} = useNotification();
   const {isVisible} = useAppSelector(state => state.appState.createShoppingListModality);
-  const toast = useRef<Toast | null>(null);
 
   const onClose = useCallback(() => {
     setIsLoading(false);
@@ -32,23 +32,15 @@ export default function CreateShoppingListModality() {
     const response = await axios.post<IShoppingList>("http://localhost:8080/api/shopping-list", createShoppingListRequest!);
 
     if (response.status !== 200) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: `Error when creating shopping list: ${response.status}: ${response.statusText}`
-      });
+      notify("Error", `Error when creating shopping list: ${response.status}: ${response.statusText}`, "error");
       onClose();
       return;
     }
 
     dispatch(appendShoppingList(response.data));
-    toast.current?.show({
-      severity: "success",
-      summary: "Success",
-      detail: "Shopping list successfully created"
-    });
+    notify("Success", "Shopping list successfully created", "success");
     onClose();
-  }, [createShoppingListRequest, dispatch, onClose]);
+  }, [createShoppingListRequest, dispatch, notify, onClose]);
 
   const footer = (
     <div>
@@ -64,8 +56,6 @@ export default function CreateShoppingListModality() {
 
   return (
     <>
-      <Toast ref={toast}/>
-
       <Dialog
         maximizable
         draggable={false}
