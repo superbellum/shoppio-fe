@@ -1,11 +1,14 @@
 import type {IShoppingListItem} from "../../../model/entity/IShoppingListItem.ts";
-import {ReactNode, useCallback, useState} from "react";
+import {ReactNode, useCallback, useMemo, useState} from "react";
 import {useAppDispatch} from "../../../store";
 import {setCreateShoppingListItemModality} from "../../../store/slices/appSlice.ts";
 import {DataView, DataViewLayoutOptions} from "primereact/dataview";
 import ShoppingListGridItem from "./grid/ShoppingListGridItem.tsx";
 import ShoppingListListItem from "./list/ShoppingListListItem.tsx";
 import {Button} from "primereact/button";
+import {Priority} from "../../../model/entity/Priority.ts";
+import {Checkbox, type CheckboxChangeEvent} from "primereact/checkbox";
+import getPriorityColor from "../../../utils/getPriorityColor.ts";
 
 export interface ShoppingListTabItemsProps {
   items: IShoppingListItem[];
@@ -15,18 +18,52 @@ export interface ShoppingListTabItemsProps {
 export default function ShoppingListItems({items, shoppingListId}: ShoppingListTabItemsProps) {
   const dispatch = useAppDispatch();
   const [layout, setLayout] = useState("grid");
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>(Object.values(Priority));
+
+  const shoppingListItems = useMemo(() => {
+    return items.filter(i => selectedPriorities.some(p => i.priority === p))
+  }, [items, selectedPriorities]);
 
   const onCreateShoppingListItem = useCallback(() => {
     dispatch(setCreateShoppingListItemModality({isVisible: true, itemId: shoppingListId}));
   }, [dispatch, shoppingListId]);
 
+  const onPriorityChange = (e: CheckboxChangeEvent) => {
+    let _selectedPriorities = [...selectedPriorities];
+
+    if (e.checked) {
+      _selectedPriorities.push(e.value);
+    } else {
+      _selectedPriorities = _selectedPriorities.filter(p => p !== e.value);
+    }
+
+    setSelectedPriorities(_selectedPriorities);
+  };
+
   const header = (
     <div className="flex justify-content-between align-items-center">
-      <div className="flex align-items-center">
-        <i className="pi pi-list mr-2 text-xl"></i>
-        <p className="text-xl">Items:</p>
+      <h3 className="mr-4">
+        Priorities:
+      </h3>
+      <div className="flex gap-4">
+        {Object.values(Priority).map(priority => (
+          <div key={priority}>
+            <Checkbox
+              className="mr-2 text-red-500"
+              inputId={`priority-checkbox-${priority}`}
+              name="priority"
+              value={priority}
+              onChange={onPriorityChange}
+              checked={selectedPriorities.some((p) => p === priority)}
+            />
+            <label htmlFor={`priority-checkbox-${priority}`} style={{color: getPriorityColor(priority)}}>
+              {priority}
+            </label>
+          </div>
+        ))}
       </div>
-      {/*todo: filter for completed/all; edit & delete*/}
+      {/*todo: checkboxes for completed/open*/}
+      {/*todo: order by Due Date, Priority*/}
       <Button
         icon="pi pi-plus"
         rounded
@@ -63,7 +100,7 @@ export default function ShoppingListItems({items, shoppingListId}: ShoppingListT
   return (
     <div className="mt-3">
       <DataView
-        value={items}
+        value={shoppingListItems}
         itemTemplate={itemTemplate}
         layout={layout}
         header={header as ReactNode}

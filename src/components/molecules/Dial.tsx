@@ -60,6 +60,7 @@ export default function Dial() {
         });
       }
     },
+    // todo: edit shopping list with new modal
   ];
 
   return (
