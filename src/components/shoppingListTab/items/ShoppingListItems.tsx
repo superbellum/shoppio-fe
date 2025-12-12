@@ -9,6 +9,7 @@ import {Button} from "primereact/button";
 import {Priority} from "../../../model/entity/Priority.ts";
 import {Checkbox, type CheckboxChangeEvent} from "primereact/checkbox";
 import getPriorityColor from "../../../utils/getPriorityColor.ts";
+import {Status} from "../../../model/entity/Status.ts";
 
 export interface ShoppingListTabItemsProps {
   items: IShoppingListItem[];
@@ -18,11 +19,14 @@ export interface ShoppingListTabItemsProps {
 export default function ShoppingListItems({items, shoppingListId}: ShoppingListTabItemsProps) {
   const dispatch = useAppDispatch();
   const [layout, setLayout] = useState("grid");
-  const [selectedPriorities, setSelectedPriorities] = useState<string[]>(Object.values(Priority));
+  const [selectedPriorities, setSelectedPriorities] = useState(Object.values(Priority));
+  const [selectedStatuses, setSelectedStatuses] = useState(Object.values(Status));
 
   const shoppingListItems = useMemo(() => {
-    return items.filter(i => selectedPriorities.some(p => i.priority === p))
-  }, [items, selectedPriorities]);
+    return items.filter(i => {
+      return selectedPriorities.some(p => i.priority === p) && selectedStatuses.some(s => i.status === s);
+    })
+  }, [items, selectedPriorities, selectedStatuses]);
 
   const onCreateShoppingListItem = useCallback(() => {
     dispatch(setCreateShoppingListItemModality({isVisible: true, itemId: shoppingListId}));
@@ -40,29 +44,66 @@ export default function ShoppingListItems({items, shoppingListId}: ShoppingListT
     setSelectedPriorities(_selectedPriorities);
   };
 
+  const onStatusChange = (e: CheckboxChangeEvent) => {
+    let _selectedStatuses = [...selectedStatuses];
+
+    if (e.checked) {
+      _selectedStatuses.push(e.value);
+    } else {
+      _selectedStatuses = _selectedStatuses.filter(p => p !== e.value);
+    }
+
+    setSelectedStatuses(_selectedStatuses);
+  };
+
   const header = (
-    <div className="flex justify-content-between align-items-center">
-      <h3 className="mr-4">
-        Priorities:
-      </h3>
-      <div className="flex gap-4">
-        {Object.values(Priority).map(priority => (
-          <div key={priority}>
-            <Checkbox
-              className="mr-2 text-red-500"
-              inputId={`priority-checkbox-${priority}`}
-              name="priority"
-              value={priority}
-              onChange={onPriorityChange}
-              checked={selectedPriorities.some((p) => p === priority)}
-            />
-            <label htmlFor={`priority-checkbox-${priority}`} style={{color: getPriorityColor(priority)}}>
-              {priority}
-            </label>
+    <div className="flex justify-content-between align-items-center p-0">
+      <div>
+        <div className="flex align-items-center h-2rem">
+          <h3 className="mr-4">
+            Priorities:
+          </h3>
+          <div className="flex gap-4">
+            {Object.values(Priority).map(priority => (
+              <div key={priority}>
+                <Checkbox
+                  className="mr-2 text-red-500"
+                  inputId={`priority-checkbox-${priority}`}
+                  name={`priority-checkbox-${priority}`}
+                  value={priority}
+                  onChange={onPriorityChange}
+                  checked={selectedPriorities.some(p => p === priority)}
+                />
+                <label htmlFor={`priority-checkbox-${priority}`} style={{color: getPriorityColor(priority)}}>
+                  {priority}
+                </label>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+        <div className="flex align-items-center h-2rem">
+          <h3 className="mr-4">
+            Statuses:
+          </h3>
+          <div className="flex gap-4">
+            {Object.values(Status).map(status => (
+              <div key={status}>
+                <Checkbox
+                  className="mr-2 text-red-500"
+                  inputId={`status-checkbox-${status}`}
+                  name={`status-checkbox-${status}`}
+                  value={status}
+                  onChange={onStatusChange}
+                  checked={selectedStatuses.some(s => s === status)}
+                />
+                <label htmlFor={`status-checkbox-${status}`}>
+                  {status}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-      {/*todo: checkboxes for completed/open*/}
       {/*todo: order by Due Date, Priority*/}
       <Button
         icon="pi pi-plus"
