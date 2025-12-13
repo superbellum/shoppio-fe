@@ -1,21 +1,26 @@
 import {Button} from "primereact/button";
-import {useCallback, useRef} from "react";
+import {useCallback, useRef, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../store";
 import DialOptions, {type IDialOption} from "./DialOptions.tsx";
-import {OverlayPanel} from "primereact/overlaypanel";
 import {setActiveShoppingListTabIndex, setCreateShoppingListModality} from "../../store/slices/appSlice.ts";
 import {confirmPopup, ConfirmPopup} from "primereact/confirmpopup";
 import axios from "axios";
 import {SHOPPING_LIST_API_URL} from "../../constants/constants.ts";
 import {useNotification} from "../../hooks/useNotification.ts";
 import {removeShoppingListById} from "../../store/slices/shoppingListSlice.ts";
+import {useClickOutside} from "primereact/hooks";
 
 export default function Dial() {
   const shoppingLists = useAppSelector(state => state.shoppingLists);
   const activeShoppingListTabIndex = useAppSelector(state => state.appState.activeShoppingListTabIndex);
   const dispatch = useAppDispatch();
   const {notify} = useNotification();
-  const op = useRef<OverlayPanel | null>(null);
+  const overlayRef = useRef<HTMLDivElement | undefined>(undefined);
+  const [visible, setVisible] = useState(false);
+
+  useClickOutside(overlayRef, () => {
+    setVisible(false);
+  });
 
   const deleteShoppingListById = useCallback(async () => {
     const shoppingListToDelete = shoppingLists[activeShoppingListTabIndex];
@@ -38,7 +43,7 @@ export default function Dial() {
       severity: "success",
       command: () => {
         dispatch(setCreateShoppingListModality({isVisible: true}));
-        op.current?.hide();
+        setVisible(false);
       }
     },
     {
@@ -53,10 +58,10 @@ export default function Dial() {
           defaultFocus: "accept",
           accept: () => {
             deleteShoppingListById();
-            op.current?.hide();
+            setVisible(false);
           },
-          reject: () => op.current?.hide(),
-          onHide: () => op.current?.hide(),
+          reject: () => setVisible(false),
+          onHide: () => setVisible(false),
         });
       }
     },
@@ -65,18 +70,19 @@ export default function Dial() {
 
   return (
     <div
+      ref={overlayRef}
       className="absolute flex flex-column align-items-center"
       style={{right: 20, top: 10, zIndex: 999}}
     >
       <Button
         icon="pi pi-ellipsis-v"
         rounded
-        onClick={(e) => op.current?.toggle(e)}
+        onClick={() => setVisible(true)}
       />
 
-      <OverlayPanel ref={op} dismissable unstyled>
+      {visible && (
         <DialOptions options={dialOptions}/>
-      </OverlayPanel>
+      )}
 
       <ConfirmPopup/>
     </div>
