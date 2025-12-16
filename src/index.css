@@ -1,11 +1,13 @@
 @import "primeflex/primeflex.min.css";
 @import "primeicons/primeicons.css";
-@import "primereact/resources/themes/lara-light-cyan/theme.css";
+@import "primereact/resources/themes/lara-light-green/theme.css";
 @import "animate.css/animate.min.css";
 
 html, body {
     margin: 0;
     padding: 0;
+    /*scales the ui up/down*/
+    font-size: 14px;
 }
 
 h5, p {

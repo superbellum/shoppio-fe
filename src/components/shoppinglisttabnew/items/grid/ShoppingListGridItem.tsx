@@ -20,9 +20,9 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
   );
 
   const header = (
-    <div className="flex justify-content-center m-2">
+    <div className="flex justify-content-center p-2 bg-primary-200">
       <Image
-        src={item.imageUrl} // todo: validate correct url format
+        src={item.imageUrl}
         alt={item.name}
         height="150"
         preview
@@ -55,7 +55,7 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
       title={title as ReactNode}
       footer={<ShoppingListGridItemFooter item={item}/> as ReactNode}
       header={header as ReactNode}
-      className="m-3 w-14rem border-round-2xl bg-primary-100"
+      className="w-full sm:w-14rem border-noround"
     >
       <div className="flex flex-column gap-3">
         <p className="align-items-center flex text-sm">
@@ -74,13 +74,13 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
         </p>
 
         <div className="flex justify-content-between align-items-center mt-1">
-          <i className={getPriorityIconClass()}></i>
+          <Icon iconClassName={getPriorityIconClass()} tooltip={{text: item.priority}}/>
 
           <Tag severity={getStatusTagSeverity()} value={item.status}/>
 
           {item.link && (
             <a href={item.link} target="_blank">
-              <i className="pi pi-external-link text-lg"></i>
+              <Icon iconClassName="pi pi-external-link text-lg" tooltip={{text: "Open in new tab"}}/>
             </a>
           )}
         </div>

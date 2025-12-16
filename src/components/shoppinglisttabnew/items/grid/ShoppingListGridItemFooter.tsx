@@ -7,7 +7,7 @@ import {useCallback, useRef, useState} from "react";
 import axios from "axios";
 import {SHOPPING_LIST_API_URL} from "../../../../constants/constants.ts";
 import {useAppDispatch} from "../../../../store";
-import {completeItem, deleteItemFromList} from "../../../../store/slices/shoppingListSlice.ts";
+import {deleteItemFromList, updateItem} from "../../../../store/slices/shoppingListSlice.ts";
 import {useNotification} from "../../../../hooks/useNotification.ts";
 import {ConfirmPopup} from "primereact/confirmpopup";
 import sleep from "../../../../utils/sleep.ts";
@@ -55,13 +55,13 @@ export default function ShoppingListGridItemFooter({item}: ShoppingListGridItemF
     setLoading(prev => ({...prev, onComplete: true}));
     await sleep(1000);
 
-    const response = await axios.patch(
+    const response = await axios.patch<IShoppingListItem>(
       `${SHOPPING_LIST_API_URL}/${item.shoppingListId}/items/${item.id}`,
       {status: Status.COMPLETED}
     );
 
     if (response.status === 200) {
-      dispatch(completeItem(item));
+      dispatch(updateItem(response.data));
       console.log("completed lul");
       notify("Success", "Successfully completed item", "success");
     } else {

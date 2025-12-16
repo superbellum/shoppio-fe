@@ -7,11 +7,10 @@ export interface ShoppingListTabProps {
 }
 
 export default function ShoppingListTab({shoppingList}: ShoppingListTabProps) {
-
   return (
     <div>
-      <ShoppingListDetails shoppingList={shoppingList}/>
-      <ShoppingListItems items={shoppingList.items} shoppingListId={shoppingList.id}/>
+      {/*<ShoppingListDetails shoppingList={shoppingList}/>*/}
+      <ShoppingListItems shoppingListItems={shoppingList.items} shoppingListId={shoppingList.id}/>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 import type {IShoppingList} from "../../model/entity/IShoppingList";
 import type {IShoppingListItem} from "../../model/entity/IShoppingListItem.ts";
-import {Status} from "../../model/entity/Status.ts";
 
 export type ShoppingListState = IShoppingList[];
 
@@ -34,15 +33,15 @@ const shoppingListSlice = createSlice({
 
       list.items = list.items.filter(item => item.id !== action.payload.id);
     },
-    completeItem(state: ShoppingListState, action: PayloadAction<IShoppingListItem>) {
+    updateItem(state: ShoppingListState, action: PayloadAction<IShoppingListItem>) {
       const list = state.find(list => list.id === action.payload.shoppingListId);
       if (!list) {
         return;
       }
 
-      const item = list.items.find(item => item.id === action.payload.id);
-      if (item) {
-        item.status = Status.COMPLETED;
+      const itemIdx = list.items.findIndex(item => item.id === action.payload.id);
+      if (itemIdx !== -1) {
+        list.items[itemIdx] = action.payload;
       }
     },
   },
@@ -54,7 +53,7 @@ export const {
   removeShoppingListById,
   addItemToShoppingList,
   deleteItemFromList,
-  completeItem,
+  updateItem,
 } = shoppingListSlice.actions;
 
 export default shoppingListSlice;
