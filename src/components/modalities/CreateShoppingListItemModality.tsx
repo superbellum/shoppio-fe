@@ -10,31 +10,32 @@ import type {IShoppingListItem} from "../../model/entity/IShoppingListItem.ts";
 import {addItemToShoppingList} from "../../store/slices/shoppingListSlice.ts";
 import {Dropdown} from "primereact/dropdown";
 import {Priority} from "../../model/entity/Priority.ts";
-import {setCreateShoppingListItemModality} from "../../store/slices/appSlice.ts";
+import {setCreateShoppingListItemModalityProps} from "../../store/slices/appSlice.ts";
 import {useNotification} from "../../hooks/useNotification.ts";
+import {SHOPPING_LIST_API_URL} from "../../constants/constants.ts";
 
 export default function CreateShoppingListItemModality() {
   const [loading, setLoading] = useState(false);
   const {notify} = useNotification();
-  const {isVisible, itemId} = useAppSelector(state => state.appState.createShoppingListItemModality);
+  const {isVisible, shoppingListId} = useAppSelector(state => state.appState.createShoppingListItemModalityProps);
   const dispatch = useAppDispatch();
   const [createShoppingListItemRequest, setCreateShoppingListItemRequest] = useState<CreateShoppingListItemRequest | null>(null);
 
   const onClose = useCallback(() => {
     setLoading(false);
     setCreateShoppingListItemRequest(null);
-    dispatch(setCreateShoppingListItemModality({isVisible: false, itemId: undefined}));
+    dispatch(setCreateShoppingListItemModalityProps({isVisible: false, shoppingListId: undefined}));
   }, [dispatch, setCreateShoppingListItemRequest, setLoading]);
 
   const onCreateShoppingListItem = useCallback(async () => {
-    if (!itemId) {
+    if (!shoppingListId) {
       return;
     }
 
     setLoading(true);
 
     const response = await axios.post<IShoppingListItem>(
-      `http://localhost:8080/api/shopping-list/${itemId}/items`,
+      `${SHOPPING_LIST_API_URL}/${shoppingListId}/items`,
       createShoppingListItemRequest!
     );
 
@@ -46,7 +47,7 @@ export default function CreateShoppingListItemModality() {
     }
 
     onClose();
-  }, [itemId, createShoppingListItemRequest, dispatch, notify, onClose]);
+  }, [shoppingListId, createShoppingListItemRequest, dispatch, notify, onClose]);
 
   const isCreateButtonDisabled = () => {
     return !createShoppingListItemRequest?.name?.trim()
@@ -120,7 +121,7 @@ export default function CreateShoppingListItemModality() {
         draggable={false}
         resizable={false}
         header={<p className="select-none">Create Shopping List Item</p> as ReactNode}
-        visible={isVisible && !!itemId}
+        visible={isVisible && !!shoppingListId}
         className="w-11 sm:w-9 md:w-7 lg:w-5 xl:w-4"
         onHide={onClose}
         footer={footer as ReactNode}

@@ -10,11 +10,12 @@ export interface IDialOption {
 
 export interface DialOptionsProps {
   options: IDialOption[];
+  optionsDirection?: "top" | "bottom";
 }
 
-export default function DialOptions({options}: DialOptionsProps) {
+export default function DialOptions({options, optionsDirection = "top"}: DialOptionsProps) {
   return (
-    <div className="flex flex-column mt-3 gap-1">
+    <div className={`flex ${optionsDirection === "top" ? "mb-3 flex-column-reverse" : "mt-3 flex-column"} gap-1`}>
       {options.map((option, index) => {
         return (
           <Button
@@ -26,7 +27,7 @@ export default function DialOptions({options}: DialOptionsProps) {
             }}
             severity={option.severity}
             className="animate__animated animate__zoomIn"
-            style={{scale: 0.8, animationDelay: `${index * 100}ms`, animationDuration: "100ms"}}
+            style={{scale: 0.9, animationDelay: `${index * 100}ms`, animationDuration: "100ms"}}
             icon={option.icon}
             rounded
             onClick={(event) => option.command(event)}

@@ -6,7 +6,7 @@ import Header from "./Header.tsx";
 import {setActiveShoppingListTabIndex} from "../store/slices/appSlice.ts";
 import moment from "moment";
 import Icon from "./molecules/Icon.tsx";
-import ShoppingListTab from "./shoppinglisttabnew/ShoppingListTab.tsx";
+import ShoppingListTab from "./shoppinglisttab/ShoppingListTab.tsx";
 
 export default function Homepage() {
   const shoppingLists = useAppSelector(state => state.shoppingLists);
@@ -44,7 +44,7 @@ export default function Homepage() {
                     <p>{shoppingList.title}</p>
                     {remainingTime < 24 * 60 * 60 && (
                       <Icon
-                        iconClassName={`absolute pi pi-bell ${getColorForRemainingTime(remainingTime)}`}
+                        iconClassName={`absolute pi pi-stopwatch ${getColorForRemainingTime(remainingTime)}`}
                         iconStyle={{scale: 0.8, top: 10, right: 0}}
                         tooltip={{
                           text: remainingTime <= 0

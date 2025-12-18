@@ -1,23 +1,31 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 export interface AppState {
-  createShoppingListModality: {
+  createShoppingListModalityProps: {
     isVisible: boolean;
   };
-  createShoppingListItemModality: {
+  createShoppingListItemModalityProps: {
     isVisible: boolean;
-    itemId?: string;
+    shoppingListId?: string;
   };
+  editShoppingListModalityProps: {
+    isVisible: boolean;
+    id?: string;
+  },
   activeShoppingListTabIndex: number;
 }
 
 const initialState: AppState = {
-  createShoppingListModality: {
+  createShoppingListModalityProps: {
     isVisible: false,
   },
-  createShoppingListItemModality: {
+  createShoppingListItemModalityProps: {
     isVisible: false,
-    itemId: undefined,
+    shoppingListId: undefined,
+  },
+  editShoppingListModalityProps: {
+    isVisible: false,
+    id: undefined,
   },
   activeShoppingListTabIndex: 0,
 };
@@ -26,16 +34,25 @@ const appSlice = createSlice({
   name: "appState",
   initialState: initialState,
   reducers: {
-    setCreateShoppingListModality(state: AppState, action: PayloadAction<{ isVisible: boolean }>) {
+    setCreateShoppingListModalityProps(state: AppState, action: PayloadAction<{ isVisible: boolean }>) {
       return {
         ...state,
-        createShoppingListModality: action.payload,
+        createShoppingListModalityProps: action.payload,
       };
     },
-    setCreateShoppingListItemModality(state: AppState, action: PayloadAction<{ isVisible: boolean, itemId?: string }>) {
+    setCreateShoppingListItemModalityProps(state: AppState, action: PayloadAction<{
+      isVisible: boolean,
+      shoppingListId?: string
+    }>) {
       return {
         ...state,
-        createShoppingListItemModality: action.payload,
+        createShoppingListItemModalityProps: action.payload,
+      };
+    },
+    setEditShoppingListModalityProps(state: AppState, action: PayloadAction<{ isVisible: boolean, id?: string }>) {
+      return {
+        ...state,
+        editShoppingListModalityProps: action.payload,
       };
     },
     setActiveShoppingListTabIndex(state: AppState, action: PayloadAction<number>) {
@@ -45,8 +62,9 @@ const appSlice = createSlice({
 });
 
 export const {
-  setCreateShoppingListModality,
-  setCreateShoppingListItemModality,
+  setCreateShoppingListModalityProps,
+  setCreateShoppingListItemModalityProps,
+  setEditShoppingListModalityProps,
   setActiveShoppingListTabIndex,
 } = appSlice.actions;
 

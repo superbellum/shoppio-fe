@@ -10,26 +10,27 @@ import {useAppDispatch, useAppSelector} from "../../store";
 import {appendShoppingList} from "../../store/slices/shoppingListSlice.ts";
 import axios from "axios";
 import type {IShoppingList} from "../../model/entity/IShoppingList.ts";
-import {setCreateShoppingListModality} from "../../store/slices/appSlice.ts";
+import {setCreateShoppingListModalityProps} from "../../store/slices/appSlice.ts";
 import {useNotification} from "../../hooks/useNotification.ts";
+import {SHOPPING_LIST_API_URL} from "../../constants/constants.ts";
 
 export default function CreateShoppingListModality() {
   const [createShoppingListRequest, setCreateShoppingListRequest] = useState<CreateShoppingListRequest | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   const {notify} = useNotification();
-  const {isVisible} = useAppSelector(state => state.appState.createShoppingListModality);
+  const {isVisible} = useAppSelector(state => state.appState.createShoppingListModalityProps);
 
   const onClose = useCallback(() => {
-    setIsLoading(false);
+    setLoading(false);
     setCreateShoppingListRequest(null);
-    dispatch(setCreateShoppingListModality({isVisible: false}));
-  }, [dispatch, setCreateShoppingListRequest, setIsLoading]);
+    dispatch(setCreateShoppingListModalityProps({isVisible: false}));
+  }, [dispatch, setCreateShoppingListRequest, setLoading]);
 
   const onCreateShoppingList = useCallback(async () => {
-    setIsLoading(true);
+    setLoading(true);
 
-    const response = await axios.post<IShoppingList>("http://localhost:8080/api/shopping-list", createShoppingListRequest!);
+    const response = await axios.post<IShoppingList>(SHOPPING_LIST_API_URL, createShoppingListRequest!);
 
     if (response.status !== 200) {
       notify("Error", `Error when creating shopping list: ${response.status}: ${response.statusText}`, "error");
@@ -38,7 +39,7 @@ export default function CreateShoppingListModality() {
     }
 
     dispatch(appendShoppingList(response.data));
-    notify("Success", "Shopping list successfully created", "success");
+    notify("Success", "Shopping list created", "success");
     onClose();
   }, [createShoppingListRequest, dispatch, notify, onClose]);
 
@@ -46,7 +47,7 @@ export default function CreateShoppingListModality() {
     <div>
       <Button
         label="Create"
-        icon={isLoading ? "pi pi-spin pi-spinner" : "pi pi-plus"}
+        icon={loading ? "pi pi-spin pi-spinner" : "pi pi-plus"}
         iconPos="right"
         onClick={onCreateShoppingList}
         disabled={!createShoppingListRequest?.title?.trim()}

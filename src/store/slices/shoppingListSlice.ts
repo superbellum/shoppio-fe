@@ -17,6 +17,14 @@ const shoppingListSlice = createSlice({
     removeShoppingListById(state: ShoppingListState, action: PayloadAction<string>) {
       return state.filter(list => list.id !== action.payload);
     },
+    upsertShoppingList(state: ShoppingListState, action: PayloadAction<IShoppingList>) {
+      const listIdx = state.findIndex(list => list.id === action.payload.id);
+
+      if (listIdx !== -1) {
+        const items = state[listIdx].items;
+        state[listIdx] = {...action.payload, items: items};
+      }
+    },
     addItemToShoppingList(state: ShoppingListState, action: PayloadAction<IShoppingListItem>) {
       const list = state.find(list => list.id === action.payload.shoppingListId);
       if (!list) {
@@ -51,6 +59,7 @@ export const {
   saveShoppingLists,
   appendShoppingList,
   removeShoppingListById,
+  upsertShoppingList,
   addItemToShoppingList,
   deleteItemFromList,
   updateItem,

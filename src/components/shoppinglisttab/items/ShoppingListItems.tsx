@@ -12,7 +12,7 @@ import {OrderByOptions, PRIORITY_ORDER} from "../../../model/common/OrderByOptio
 import {Button} from "primereact/button";
 import {useAppDispatch} from "../../../store";
 import moment from "moment/moment";
-import {setCreateShoppingListItemModality} from "../../../store/slices/appSlice.ts";
+import {setCreateShoppingListItemModalityProps} from "../../../store/slices/appSlice.ts";
 
 export interface ShoppingListItemsProps {
   shoppingListItems: IShoppingListItem[];
@@ -46,7 +46,7 @@ export default function ShoppingListItems({shoppingListId, shoppingListItems}: S
   }, [shoppingListItems, selectedPriorities, selectedStatuses, selectedOrder]);
 
   const onCreateShoppingListItem = useCallback(() => {
-    dispatch(setCreateShoppingListItemModality({isVisible: true, itemId: shoppingListId}));
+    dispatch(setCreateShoppingListItemModalityProps({isVisible: true, shoppingListId: shoppingListId}));
   }, [dispatch, shoppingListId]);
 
   const onPriorityChange = (e: CheckboxChangeEvent) => {
@@ -75,13 +75,14 @@ export default function ShoppingListItems({shoppingListId, shoppingListItems}: S
 
   return (
     <div>
-      <div className="flex justify-content-between align-items-center p-0 bg-primary-100 px-3 py-1 border-round mb-4">
+      <div
+        className="flex flex-column lg:flex-row justify-content-between align-items-center bg-primary-100 px-3 py-1 border-round mb-4">
         <div>
-          <div className="flex align-items-center h-2rem">
+          <div className="flex align-items-center lg:h-2rem">
             <h3 className="mr-4">
               Priorities:
             </h3>
-            <div className="flex gap-4">
+            <div className="flex sm:gap-4 flex-column sm:flex-row">
               {Object.values(Priority).map(priority => (
                 <div key={priority} className="flex align-items-center">
                   <Checkbox
@@ -126,7 +127,7 @@ export default function ShoppingListItems({shoppingListId, shoppingListItems}: S
           </div>
         </div>
 
-        <div className="flex gap-0 ml-6 gap-3 align-items-center">
+        <div className="flex gap-0 ml-6 gap-3 align-items-center lg:mr-auto">
           <h3>Order by:</h3>
           <Dropdown
             value={selectedOrder}
@@ -135,25 +136,36 @@ export default function ShoppingListItems({shoppingListId, shoppingListItems}: S
           />
         </div>
 
-        <Button
-          icon="pi pi-plus"
-          rounded
-          className="ml-auto mr-4"
-          onClick={onCreateShoppingListItem}
-        />
+        <div className="flex justify-content-between">
+          <Button
+            icon="pi pi-plus"
+            className="ml-auto mr-4"
+            onClick={onCreateShoppingListItem}
+          />
 
-        <DataViewLayoutOptions
-          layout={layout}
-          onChange={(e) => setLayout(e.value as LayoutType)}
-        />
-        {/*header with grid/list layout switch, create item button, filters & orderings*/}
+          <DataViewLayoutOptions
+            layout={layout}
+            onChange={(e) => setLayout(e.value as LayoutType)}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 md:gap-6 justify-content-center">
-        {items.map(item => (
-          <ShoppingListGridItem key={item.id} item={item}/>
-        ))}
-      </div>
+      {layout === LayoutType.LIST && (
+        // todo
+        <div className="flex flex-wrap gap-4 md:gap-6 justify-content-center">
+          {/*{items.map(item => (*/}
+          {/*  <ShoppingListGridItem key={item.id} item={item}/>*/}
+          {/*))}*/}
+        </div>
+      )}
+
+      {layout === LayoutType.GRID && (
+        <div className="flex flex-wrap gap-4 md:gap-6 justify-content-center">
+          {items.map(item => (
+            <ShoppingListGridItem key={item.id} item={item}/>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

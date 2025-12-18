@@ -36,7 +36,7 @@ export default function ShoppingListGridItemFooter({item}: ShoppingListGridItemF
 
     if (response.status === 200) {
       dispatch(deleteItemFromList(item));
-      notify("Success", "Successfully deleted item from list", "success");
+      notify("Success", "Item deleted from list", "success");
     } else {
       notify("Error", `Error when deleting shopping list item: ${response.status}: ${response.statusText}`, "error");
     }
