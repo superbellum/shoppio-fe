@@ -52,8 +52,11 @@ export default function EditShoppingListModality() {
     onClose();
   }, [shoppingListId, patchShoppingListRequest, dispatch, notify, onClose, setLoading]);
 
-  const editButtonDisabled = () => {
-    return false; //todo
+  const isEditButtonDisabled = () => {
+    return shoppingListToEdit?.title === patchShoppingListRequest?.title
+      && shoppingListToEdit?.description === patchShoppingListRequest?.description
+      && shoppingListToEdit?.status === patchShoppingListRequest?.status
+      && shoppingListToEdit?.dueDate === patchShoppingListRequest?.dueDate; // todo: check for equality
   };
 
   const footer = (
@@ -63,7 +66,7 @@ export default function EditShoppingListModality() {
         icon={loading ? "pi pi-spin pi-spinner" : "pi pi-check"}
         iconPos="right"
         onClick={onEditShoppingList}
-        disabled={editButtonDisabled()}
+        disabled={isEditButtonDisabled()}
       />
     </div>
   );
@@ -74,7 +77,7 @@ export default function EditShoppingListModality() {
         maximizable
         draggable={false}
         resizable={false}
-        header="Edit Shopping List"
+        header={`Edit Shopping List: ${shoppingListToEdit?.title}`}
         visible={isVisible}
         className="w-11 sm:w-9 md:w-7 lg:w-5 xl:w-4"
         onHide={onClose}
