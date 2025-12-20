@@ -238,37 +238,39 @@ export default function EditShoppingListItemModality() {
             <label htmlFor="imageUrl">Image URL</label>
           </FloatLabel>
 
-          <FloatLabel>
-            <Dropdown
-              className="w-full"
-              inputId="priority"
-              value={patchShoppingListItemRequest?.priority}
-              onChange={(e) => setPatchShoppingListItemRequest({
-                ...patchShoppingListItemRequest,
-                priority: e.value,
-              })}
-              options={Object.values(Priority)}
-              valueTemplate={selectedPriorityTemplate as ReactNode}
-              itemTemplate={priorityOptionTemplate as ReactNode}
-            />
-            <label htmlFor="priority">Priority</label>
-          </FloatLabel>
+          <div className="flex justify-content-around align-items-center">
+            <FloatLabel>
+              <Dropdown
+                className="w-10rem"
+                inputId="priority"
+                value={patchShoppingListItemRequest?.priority}
+                onChange={(e) => setPatchShoppingListItemRequest({
+                  ...patchShoppingListItemRequest,
+                  priority: e.value,
+                })}
+                options={Object.values(Priority)}
+                valueTemplate={selectedPriorityTemplate as ReactNode}
+                itemTemplate={priorityOptionTemplate as ReactNode}
+              />
+              <label htmlFor="priority">Priority</label>
+            </FloatLabel>
 
-          <FloatLabel>
-            <Dropdown
-              className="w-full"
-              inputId="status"
-              value={patchShoppingListItemRequest?.status}
-              onChange={(e) => setPatchShoppingListItemRequest({
-                ...patchShoppingListItemRequest,
-                status: e.value,
-              })}
-              options={Object.values(Status)}
-              valueTemplate={selectedStatusTemplate as ReactNode}
-              itemTemplate={statusOptionTemplate as ReactNode}
-            />
-            <label htmlFor="status">Status</label>
-          </FloatLabel>
+            <FloatLabel>
+              <Dropdown
+                className="w-12rem"
+                inputId="status"
+                value={patchShoppingListItemRequest?.status}
+                onChange={(e) => setPatchShoppingListItemRequest({
+                  ...patchShoppingListItemRequest,
+                  status: e.value,
+                })}
+                options={Object.values(Status)}
+                valueTemplate={selectedStatusTemplate as ReactNode}
+                itemTemplate={statusOptionTemplate as ReactNode}
+              />
+              <label htmlFor="status">Status</label>
+            </FloatLabel>
+          </div>
         </div>
       </Dialog>
     </>

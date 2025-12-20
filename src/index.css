@@ -18,16 +18,3 @@ h5, p {
 h1, h2, h3, h4, h5, h6, label, p {
     user-select: none;
 }
-
-
-.shopping-list-item-card-high {
-    background: linear-gradient(35deg, #D9342B -100%, transparent 60%) no-repeat bottom left;
-}
-
-.shopping-list-item-card-medium {
-    background: linear-gradient(35deg, #C79807 -100%, transparent 60%) no-repeat bottom left;
-}
-
-.shopping-list-item-card-low {
-    background: linear-gradient(35deg, #1DA750 -100%, transparent 60%) no-repeat bottom left;
-}

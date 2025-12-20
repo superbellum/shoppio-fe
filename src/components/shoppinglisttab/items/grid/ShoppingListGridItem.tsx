@@ -4,10 +4,10 @@ import {Card} from "primereact/card";
 import type {ReactNode} from "react";
 import Icon from "../../../molecules/Icon.tsx";
 import formatDate from "../../../../utils/formatDate.ts";
-import {Priority} from "../../../../model/entity/Priority.ts";
 import {Status} from "../../../../model/entity/Status.ts";
 import {Tag} from "primereact/tag";
 import ShoppingListGridItemFooter from "./ShoppingListGridItemFooter.tsx";
+import {Priority} from "../../../../model/entity/Priority.ts";
 
 export interface ShoppingListGridItemProps {
   item: IShoppingListItem;
@@ -20,7 +20,7 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
   );
 
   const header = (
-    <div className="flex justify-content-center p-2 bg-primary-200 border-round-top-lg">
+    <div className="flex justify-content-center p-2 border-round-top-lg">
       <Image
         src={item.imageUrl}
         alt={item.name}
@@ -33,22 +33,11 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
   const getPriorityIconClass = () => {
     switch (item.priority) {
       case Priority.HIGH:
-        return "pi pi-angle-double-up text-red-600 text-2xl bg-red-100 p-1 border-round";
+        return "pi pi-angle-double-up text-red-400 text-2xl bg-red-50 p-1 border-round";
       case Priority.MEDIUM:
-        return "pi pi-equals text-yellow-600 text-2xl bg-yellow-100 p-1 border-round";
+        return "pi pi-equals text-yellow-400 text-2xl bg-yellow-50 p-1 border-round";
       case Priority.LOW:
-        return "pi pi-angle-double-down text-green-600 text-2xl bg-green-100 p-1 border-round";
-    }
-  };
-
-  const getPriorityCardCornerClass = () => {
-    switch (item.priority) {
-      case Priority.HIGH:
-        return "shopping-list-item-card-high";
-      case Priority.MEDIUM:
-        return "shopping-list-item-card-medium";
-      case Priority.LOW:
-        return "shopping-list-item-card-low";
+        return "pi pi-angle-double-down text-green-400 text-2xl bg-green-50 p-1 border-round";
     }
   };
 
@@ -66,7 +55,8 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
       title={title as ReactNode}
       footer={<ShoppingListGridItemFooter item={item}/> as ReactNode}
       header={header as ReactNode}
-      className={`w-full sm:w-14rem border-round-bottom-lg ${getPriorityCardCornerClass()}`}
+      className={"w-full sm:w-14rem border-round-bottom-lg}"}
+      style={{background: `linear-gradient(225deg, ${item.status === Status.COMPLETED ? "var(--green-300)" : "var(--primary-200)"} -200%, transparent 80%)`}}
     >
       <div className="flex flex-column gap-3">
         {/*todo: description*/}
@@ -87,6 +77,8 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
         </p>
 
         <div className="flex justify-content-between align-items-center mt-1">
+          <Icon iconClassName={getPriorityIconClass()} tooltip={{text: item.priority}}/>
+
           <Tag severity={getStatusTagSeverity()} value={item.status}/>
 
           {item.link && (
