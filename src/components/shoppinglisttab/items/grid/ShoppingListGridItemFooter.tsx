@@ -11,6 +11,7 @@ import {deleteItemFromList, updateItem} from "../../../../store/slices/shoppingL
 import {useNotification} from "../../../../hooks/useNotification.ts";
 import {ConfirmPopup} from "primereact/confirmpopup";
 import sleep from "../../../../utils/sleep.ts";
+import {setEditShoppingListItemModalityProps} from "../../../../store/slices/appSlice.ts";
 
 interface Loading {
   onComplete: boolean;
@@ -45,11 +46,8 @@ export default function ShoppingListGridItemFooter({item}: ShoppingListGridItemF
   }, [item, dispatch, notify, setLoading]);
 
   const onEditItem = useCallback(async () => {
-    // todo
-    setLoading(prev => ({...prev, onEdit: true}));
-    await sleep(1000);
-    setLoading(prev => ({...prev, onEdit: false}));
-  }, [setLoading]);
+    dispatch(setEditShoppingListItemModalityProps({isVisible: true, itemId: item.id}));
+  }, [dispatch]);
 
   const onCompleteItem = useCallback(async () => {
     setLoading(prev => ({...prev, onComplete: true}));
@@ -62,7 +60,6 @@ export default function ShoppingListGridItemFooter({item}: ShoppingListGridItemF
 
     if (response.status === 200) {
       dispatch(updateItem(response.data));
-      console.log("completed lul");
       notify("Success", "Successfully completed item", "success");
     } else {
       notify("Error", `Error when completing item: ${response.status}: ${response.statusText}`, "error");
@@ -89,7 +86,7 @@ export default function ShoppingListGridItemFooter({item}: ShoppingListGridItemF
               <i className="pi pi-check-circle text-sm"></i>
             ) as ReactNode}
           </Button>
-        ) as ReactNode}
+        )}
 
         <Button
           className="p-2"

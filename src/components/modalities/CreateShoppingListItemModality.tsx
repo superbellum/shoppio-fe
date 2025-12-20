@@ -13,6 +13,7 @@ import {Priority} from "../../model/entity/Priority.ts";
 import {setCreateShoppingListItemModalityProps} from "../../store/slices/appSlice.ts";
 import {useNotification} from "../../hooks/useNotification.ts";
 import {SHOPPING_LIST_API_URL} from "../../constants/constants.ts";
+import {InputTextarea} from "primereact/inputtextarea";
 
 export default function CreateShoppingListItemModality() {
   const [loading, setLoading] = useState(false);
@@ -141,6 +142,20 @@ export default function CreateShoppingListItemModality() {
               Name
               <span className="text-red-600 ml-1">*</span>
             </label>
+          </FloatLabel>
+
+          <FloatLabel>
+            <InputTextarea
+              className="w-full"
+              id="description"
+              value={createShoppingListItemRequest?.description}
+              onChange={(e) => setCreateShoppingListItemRequest({
+                ...createShoppingListItemRequest,
+                description: e.target.value,
+              } as CreateShoppingListItemRequest)}
+              rows={5}
+            />
+            <label htmlFor="description">Description</label>
           </FloatLabel>
 
           <FloatLabel>

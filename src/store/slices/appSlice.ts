@@ -12,6 +12,10 @@ export interface AppState {
     isVisible: boolean;
     id?: string;
   },
+  editShoppingListItemModalityProps: {
+    isVisible: boolean;
+    itemId?: string;
+  },
   activeShoppingListTabIndex: number;
 }
 
@@ -26,6 +30,10 @@ const initialState: AppState = {
   editShoppingListModalityProps: {
     isVisible: false,
     id: undefined,
+  },
+  editShoppingListItemModalityProps: {
+    isVisible: false,
+    itemId: undefined,
   },
   activeShoppingListTabIndex: 0,
 };
@@ -55,6 +63,15 @@ const appSlice = createSlice({
         editShoppingListModalityProps: action.payload,
       };
     },
+    setEditShoppingListItemModalityProps(state: AppState, action: PayloadAction<{
+      isVisible: boolean,
+      itemId?: string
+    }>) {
+      return {
+        ...state,
+        editShoppingListItemModalityProps: action.payload,
+      };
+    },
     setActiveShoppingListTabIndex(state: AppState, action: PayloadAction<number>) {
       state.activeShoppingListTabIndex = action.payload;
     }
@@ -65,6 +82,7 @@ export const {
   setCreateShoppingListModalityProps,
   setCreateShoppingListItemModalityProps,
   setEditShoppingListModalityProps,
+  setEditShoppingListItemModalityProps,
   setActiveShoppingListTabIndex,
 } = appSlice.actions;
 

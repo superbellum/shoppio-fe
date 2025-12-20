@@ -1,5 +1,5 @@
 import {Button} from "primereact/button";
-import {useCallback, useRef, useState} from "react";
+import {useCallback, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../store";
 import DialOptions, {type IDialOption} from "./DialOptions.tsx";
 import {
@@ -12,7 +12,6 @@ import axios from "axios";
 import {SHOPPING_LIST_API_URL} from "../../constants/constants.ts";
 import {useNotification} from "../../hooks/useNotification.ts";
 import {removeShoppingListById} from "../../store/slices/shoppingListSlice.ts";
-import {useClickOutside} from "primereact/hooks";
 
 export interface DialProps {
   optionsDirection?: "top" | "bottom";
@@ -23,13 +22,8 @@ export default function Dial({optionsDirection = "top"}: DialProps) {
   const activeShoppingListTabIndex = useAppSelector(state => state.appState.activeShoppingListTabIndex);
   const dispatch = useAppDispatch();
   const {notify} = useNotification();
-  const overlayRef = useRef<HTMLDivElement | undefined>(undefined);
   const [dialOptionsVisible, setDialOptionsVisible] = useState(false);
   const activeShoppingList = shoppingLists[activeShoppingListTabIndex]
-
-  useClickOutside(overlayRef, () => {
-    setDialOptionsVisible(false);
-  });
 
   const deleteShoppingListById = useCallback(async () => {
     const response = await axios.delete<string>(`${SHOPPING_LIST_API_URL}/${activeShoppingList.id}`);
@@ -41,7 +35,9 @@ export default function Dial({optionsDirection = "top"}: DialProps) {
     } else {
       notify("Error", `Error when deleting shopping list: ${response.status}: ${response.statusText}`, "error");
     }
-  }, [shoppingLists, activeShoppingListTabIndex, dispatch, notify]);
+
+    setDialOptionsVisible(false);
+  }, [activeShoppingList, dispatch, notify, setDialOptionsVisible]);
 
   const dialOptions: IDialOption[] = [
     {
@@ -70,12 +66,9 @@ export default function Dial({optionsDirection = "top"}: DialProps) {
         confirmPopup({
           target: event.currentTarget,
           message: `Are you sure you want to delete "${activeShoppingList.title}" ?`,
-          icon: "pi pi-exclamation-triangle",
+          icon: "pi pi-exclamation-triangle text-red-500",
           defaultFocus: "accept",
-          accept: () => {
-            deleteShoppingListById();
-            setDialOptionsVisible(false);
-          },
+          accept: deleteShoppingListById,
           reject: () => setDialOptionsVisible(false),
           onHide: () => setDialOptionsVisible(false),
         });
@@ -87,14 +80,14 @@ export default function Dial({optionsDirection = "top"}: DialProps) {
 
   return (
     <div
-      ref={overlayRef}
       className={`fixed flex ${optionsDirection === "top" ? "flex-column-reverse" : "flex-column"} align-items-center`}
+      onMouseLeave={() => setDialOptionsVisible(false)}
       style={{right: 10, zIndex: 999, ...dialStyle}}
     >
       <Button
         icon="pi pi-ellipsis-v"
         rounded
-        onClick={() => setDialOptionsVisible(true)}
+        onMouseEnter={() => setDialOptionsVisible(true)}
       />
 
       {dialOptionsVisible && (

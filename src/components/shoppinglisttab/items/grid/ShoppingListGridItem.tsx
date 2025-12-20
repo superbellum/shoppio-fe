@@ -20,7 +20,7 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
   );
 
   const header = (
-    <div className="flex justify-content-center p-2 bg-primary-200">
+    <div className="flex justify-content-center p-2 bg-primary-200 border-round-top-lg">
       <Image
         src={item.imageUrl}
         alt={item.name}
@@ -41,6 +41,17 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
     }
   };
 
+  const getPriorityCardCornerClass = () => {
+    switch (item.priority) {
+      case Priority.HIGH:
+        return "shopping-list-item-card-high";
+      case Priority.MEDIUM:
+        return "shopping-list-item-card-medium";
+      case Priority.LOW:
+        return "shopping-list-item-card-low";
+    }
+  };
+
   const getStatusTagSeverity = () => {
     switch (item.status) {
       case Status.OPEN:
@@ -55,9 +66,11 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
       title={title as ReactNode}
       footer={<ShoppingListGridItemFooter item={item}/> as ReactNode}
       header={header as ReactNode}
-      className="w-full sm:w-14rem border-noround"
+      className={`w-full sm:w-14rem border-round-bottom-lg ${getPriorityCardCornerClass()}`}
     >
       <div className="flex flex-column gap-3">
+        {/*todo: description*/}
+
         <p className="align-items-center flex text-sm">
           <Icon
             iconClassName="pi pi-calendar-plus text-lg mr-2 text-primary"
@@ -74,8 +87,6 @@ export default function ShoppingListGridItem({item}: ShoppingListGridItemProps) 
         </p>
 
         <div className="flex justify-content-between align-items-center mt-1">
-          <Icon iconClassName={getPriorityIconClass()} tooltip={{text: item.priority}}/>
-
           <Tag severity={getStatusTagSeverity()} value={item.status}/>
 
           {item.link && (

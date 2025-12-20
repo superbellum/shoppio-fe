@@ -5,6 +5,7 @@ export interface IShoppingListItem {
   id: string,
   shoppingListId: string,
   name: string,
+  description?: string;
   link?: string,
   imageUrl: string,
   status: Status,

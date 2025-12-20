@@ -121,7 +121,7 @@ export default function EditShoppingListModality() {
                 setPatchShoppingListRequest({
                   ...patchShoppingListRequest,
                   dueDate: dueDate,
-                } as PatchShoppingListRequest)
+                })
               }}
               minDate={new Date()}
               readOnlyInput
