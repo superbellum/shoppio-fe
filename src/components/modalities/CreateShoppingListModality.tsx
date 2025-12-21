@@ -58,7 +58,7 @@ export default function CreateShoppingListModality() {
   return (
     <>
       <Dialog
-        maximizable
+        maximized={window.innerWidth < 576}
         draggable={false}
         resizable={false}
         header="Create Shopping List"

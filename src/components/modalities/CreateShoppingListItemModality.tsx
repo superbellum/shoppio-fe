@@ -118,7 +118,7 @@ export default function CreateShoppingListItemModality() {
   return (
     <>
       <Dialog
-        maximizable
+        maximized={window.innerWidth < 576}
         draggable={false}
         resizable={false}
         header={<p className="select-none">Create Shopping List Item</p> as ReactNode}

@@ -74,7 +74,7 @@ export default function EditShoppingListModality() {
   return (
     <>
       <Dialog
-        maximizable
+        maximized={window.innerWidth < 576}
         draggable={false}
         resizable={false}
         header={`Edit Shopping List: ${shoppingListToEdit?.title}`}
